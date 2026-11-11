@@ -6,12 +6,17 @@ import { toast } from "sonner";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 import { AButton, ACard, AInput } from "@/components/admin/ui";
 
+function authRedirectTo() {
+  return `${window.location.origin}/auth/callback`;
+}
+
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [magicSent, setMagicSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const login = async (e: FormEvent) => {
     e.preventDefault();
@@ -40,7 +45,7 @@ export default function AdminLoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
+        emailRedirectTo: authRedirectTo(),
       },
     });
     setBusy(false);
@@ -50,6 +55,25 @@ export default function AdminLoginPage() {
     }
     setMagicSent(true);
     toast.success("Giriş bağlantısı e-postanıza gönderildi");
+  };
+
+  const forgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Önce e-posta adresinizi girin");
+      return;
+    }
+    setBusy(true);
+    const supabase = getBrowserSupabase();
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: authRedirectTo(),
+    });
+    setBusy(false);
+    if (error) {
+      toast.error("Şifre sıfırlama gönderilemedi: " + error.message);
+      return;
+    }
+    setResetSent(true);
+    toast.success("Şifre yenileme bağlantısı e-postanıza gönderildi");
   };
 
   return (
@@ -82,16 +106,31 @@ export default function AdminLoginPage() {
             {busy ? "Giriş yapılıyor…" : "Giriş Yap"}
           </AButton>
         </form>
-        <div className="mt-4 border-t border-[var(--line)] pt-4 text-center">
-          {magicSent ? (
+        <div className="mt-4 space-y-2 border-t border-[var(--line)] pt-4 text-center">
+          {resetSent ? (
             <p className="text-sm text-emerald-700">
-              Bağlantı gönderildi — e-postanızı kontrol edin.
+              Şifre yenileme bağlantısı gönderildi.
             </p>
           ) : (
             <button
-              onClick={magicLink}
+              type="button"
+              onClick={forgotPassword}
               disabled={busy}
               className="text-sm text-[var(--ink-soft)] underline underline-offset-4 transition hover:text-[var(--ink)]"
+            >
+              Şifremi unuttum
+            </button>
+          )}
+          {magicSent ? (
+            <p className="text-sm text-emerald-700">
+              Giriş bağlantısı gönderildi — e-postanızı kontrol edin.
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={magicLink}
+              disabled={busy}
+              className="block w-full text-sm text-[var(--ink-soft)] underline underline-offset-4 transition hover:text-[var(--ink)]"
             >
               Şifresiz giriş bağlantısı gönder
             </button>

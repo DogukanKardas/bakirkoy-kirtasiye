@@ -3,6 +3,7 @@ import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
 import { getSettings } from "@db/queries";
 import { siteUrl } from "@/lib/site";
+import { AuthHashCatcher } from "@/components/auth/auth-hash-catcher";
 import "./globals.css";
 
 const display = Fraunces({
@@ -118,6 +119,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <AuthHashCatcher />
         {children}
       </body>
     </html>

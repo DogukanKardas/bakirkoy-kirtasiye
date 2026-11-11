@@ -21,7 +21,10 @@ Vercel projesi → **Settings → Environment Variables**. Production (ve Previe
 ## 2. Supabase production
 
 1. [supabase.com](https://supabase.com) → proje seçili olduğundan emin olun (veya ayrı production projesi açın).
-2. **Authentication → URL Configuration**: Site URL = canlı alan adınız; Redirect URLs’e `https://alanadiniz/admin/**` ekleyin.
+2. **Authentication → URL Configuration**:
+   - **Site URL** = `https://alanadiniz` (örn. `https://bakirkoy-kirtasiye.vercel.app`)
+   - **Redirect URLs** = `https://alanadiniz/auth/callback` ve `https://alanadiniz/**`
+   - Şifre yenileme / magic link `/auth/callback` üzerinden işlenir; eski mailleri kullanmayın.
 3. **Storage**: `product-images` (veya kullandığınız bucket) public okuma politikasının açık olduğunu doğrulayın.
 4. **Database**: Geliştirmede uygulanan migration’ların production’da da uygulandığını kontrol edin (SQL Editor veya CLI `supabase db push`).
 5. RLS açık kalsın; anon key ile yalnızca public okuma + public RPC’ler çalışmalı.
