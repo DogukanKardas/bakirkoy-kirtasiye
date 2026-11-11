@@ -7,9 +7,10 @@ import {
   getSettings,
 } from "@db/queries";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const settings = await getSettings();
+/** Build sırasında env yoksa prerender kırılmasın; istek anında üretilir. */
+export const dynamic = "force-dynamic";
 
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { path: "/", priority: 1, changeFrequency: "weekly" as const },
     { path: "/urunler", priority: 0.9, changeFrequency: "daily" as const },
@@ -40,37 +41,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: p.priority,
   }));
 
-  const [products, categories, collections] = await Promise.all([
-    getProductsForSitemap(),
-    getCategories(),
-    getActiveCollections(),
-  ]);
+  // Env yoksa (veya DB geçici hata) en azından sabit sayfalar dönsün
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return staticPages;
+  }
 
-  return [
-    ...staticPages,
-    ...categories.map(
-      (c): MetadataRoute.Sitemap[number] => ({
-        url: absoluteUrl(`/kategori/${c.slug}`),
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.8,
-      }),
-    ),
-    ...collections.map(
-      (c): MetadataRoute.Sitemap[number] => ({
-        url: absoluteUrl(`/koleksiyon/${c.slug}`),
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.6,
-      }),
-    ),
-    ...products.map(
-      (p): MetadataRoute.Sitemap[number] => ({
-        url: absoluteUrl(`/urun/${p.slug}`),
-        lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-        changeFrequency: "weekly",
-        priority: settings.commerceEnabled ? 0.8 : 0.7,
-      }),
-    ),
-  ];
+  try {
+    const [settings, products, categories, collections] = await Promise.all([
+      getSettings(),
+      getProductsForSitemap(),
+      getCategories(),
+      getActiveCollections(),
+    ]);
+
+    return [
+      ...staticPages,
+      ...categories.map(
+        (c): MetadataRoute.Sitemap[number] => ({
+          url: absoluteUrl(`/kategori/${c.slug}`),
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        }),
+      ),
+      ...collections.map(
+        (c): MetadataRoute.Sitemap[number] => ({
+          url: absoluteUrl(`/koleksiyon/${c.slug}`),
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.6,
+        }),
+      ),
+      ...products.map(
+        (p): MetadataRoute.Sitemap[number] => ({
+          url: absoluteUrl(`/urun/${p.slug}`),
+          lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+          changeFrequency: "weekly",
+          priority: settings.commerceEnabled ? 0.8 : 0.7,
+        }),
+      ),
+    ];
+  } catch {
+    return staticPages;
+  }
 }
