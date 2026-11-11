@@ -1,12 +1,13 @@
 "use client";
 
-export function SearchTrigger() {
+export function SearchTrigger({ className = "" }: { className?: string }) {
   return (
     <button
       type="button"
+      aria-label="Ara"
       title="Ara (Ctrl+K)"
       onClick={() => window.dispatchEvent(new CustomEvent("open-search"))}
-      className="flex items-center gap-2 text-[var(--ink-soft)] transition hover:text-[var(--ink)]"
+      className={`grid h-10 w-10 place-items-center text-[var(--ink-soft)] transition hover:text-[var(--ink)] ${className}`}
     >
       <svg
         viewBox="0 0 24 24"
@@ -19,13 +20,6 @@ export function SearchTrigger() {
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" strokeLinecap="round" />
       </svg>
-      <span className="text-sm font-medium">Ara</span>
-      <kbd
-        aria-hidden
-        className="hidden border border-[var(--line)] px-1.5 py-0.5 font-[family-name:var(--font-mono)] text-[10px] text-[var(--ink-muted)] md:inline"
-      >
-        ⌘K
-      </kbd>
     </button>
   );
 }
