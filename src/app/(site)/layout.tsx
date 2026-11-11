@@ -28,7 +28,11 @@ export default async function SiteLayout({
       </a>
       <Preloader shopName={settings.shopName} />
       <SiteHeader settings={settings} />
-      <main id="icerik" className="flex-1 outline-none" tabIndex={-1}>
+      <main
+        id="icerik"
+        className="flex-1 outline-none max-sm:pb-28"
+        tabIndex={-1}
+      >
         {children}
       </main>
       <SiteFooter settings={settings} />

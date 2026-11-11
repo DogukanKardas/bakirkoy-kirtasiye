@@ -305,7 +305,7 @@ export function ListDrawerHost({
         aria-expanded={drawerOpen}
         animate={landedTick ? { scale: [1, 1.18, 0.94, 1], rotate: [-4, 2, -5, -4] } : {}}
         transition={{ duration: 0.45, ease: EASE }}
-        className="fixed bottom-6 right-6 z-[60] flex h-20 w-20 rotate-[-4deg] flex-col items-center justify-center bg-[var(--accent)] text-[var(--ink)] shadow-[3px_4px_0_rgba(21,21,21,0.85)] transition-colors hover:bg-[var(--ink)] hover:text-[var(--accent)]"
+        className="fixed right-4 z-[60] flex h-20 w-20 rotate-[-4deg] flex-col items-center justify-center bg-[var(--accent)] text-[var(--ink)] shadow-[3px_4px_0_rgba(21,21,21,0.85)] transition-colors hover:bg-[var(--ink)] hover:text-[var(--accent)] max-sm:bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 sm:right-6"
       >
         <span className="font-[family-name:var(--font-mono)] text-2xl leading-none">
           {ready ? count : 0}

@@ -20,32 +20,35 @@ export function SiteHeader({ settings }: { settings: Settings }) {
           {settings.announcementText}
         </div>
       ) : null}
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:gap-4 sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-3"
+          className="flex min-w-0 shrink-0 items-center gap-3"
           aria-label={`${settings.shopName} ana sayfa`}
         >
           <BrandLogo
             src={settings.logoUrl}
             alt={settings.shopName}
-            height={40}
+            height={44}
             priority
+            className="max-h-11 w-auto max-w-[min(52vw,200px)] sm:max-w-[240px]"
           />
         </Link>
 
-        <div className="hidden items-center gap-2 text-xs text-[var(--ink-muted)] md:flex">
+        <div className="hidden min-w-0 items-center gap-2 text-xs text-[var(--ink-muted)] md:flex">
           <span
-            className={`inline-block h-2 w-2 rounded-full ${openState.open ? "bg-emerald-600" : "bg-red-700"}`}
+            className={`inline-block h-2 w-2 shrink-0 rounded-full ${openState.open ? "bg-emerald-600" : "bg-red-700"}`}
             aria-hidden
           />
-          <span>{openState.open ? "Şu an açık" : "Şu an kapalı"}</span>
+          <span className="truncate">
+            {openState.open ? "Şu an açık" : "Şu an kapalı"}
+          </span>
           <span aria-hidden>·</span>
-          <span>{openState.todayLabel}</span>
+          <span className="truncate">{openState.todayLabel}</span>
         </div>
 
-        <nav className="flex items-center gap-5 text-sm font-medium text-[var(--ink-soft)]">
-          <Magnetic strength={0.25}>
+        <nav className="flex shrink-0 items-center gap-3 text-sm font-medium text-[var(--ink-soft)] sm:gap-5">
+          <Magnetic strength={0.25} className="hidden sm:inline-block">
             <Link href="/urunler" className="transition hover:text-[var(--ink)]">
               Ürünler
             </Link>
@@ -67,7 +70,13 @@ export function SiteHeader({ settings }: { settings: Settings }) {
             </Link>
           </Magnetic>
           <SearchTrigger />
-          {settings.commerceEnabled ? <CartDrawerButton /> : <ListCountLink />}
+          {settings.commerceEnabled ? (
+            <CartDrawerButton />
+          ) : (
+            <span className="hidden sm:inline-flex">
+              <ListCountLink />
+            </span>
+          )}
         </nav>
       </div>
     </header>

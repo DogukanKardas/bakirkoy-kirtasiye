@@ -23,13 +23,19 @@ function SortableImage({
   url,
   index,
   onRemove,
+  showCoverBadge,
+  allowReorder,
+  contain,
 }: {
   url: string;
   index: number;
   onRemove: () => void;
+  showCoverBadge: boolean;
+  allowReorder: boolean;
+  contain: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: url });
+    useSortable({ id: url, disabled: !allowReorder });
   return (
     <div
       ref={setNodeRef}
@@ -40,22 +46,24 @@ function SortableImage({
       <img
         src={url}
         alt={`Görsel ${index + 1}`}
-        className="h-full w-full object-cover"
+        className={`h-full w-full ${contain ? "object-contain p-2" : "object-cover"}`}
       />
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className="absolute left-1 top-1 cursor-grab rounded bg-black/50 px-1.5 py-0.5 text-xs text-white opacity-0 transition group-hover:opacity-100"
-        title="Sürükle"
-      >
-        ⠿
-      </button>
-      {index === 0 && (
+      {allowReorder ? (
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="absolute left-1 top-1 cursor-grab rounded bg-black/50 px-1.5 py-0.5 text-xs text-white opacity-0 transition group-hover:opacity-100"
+          title="Sürükle"
+        >
+          ⠿
+        </button>
+      ) : null}
+      {showCoverBadge && index === 0 ? (
         <span className="absolute bottom-1 left-1 rounded bg-[var(--accent)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--ink)]">
           Kapak
         </span>
-      )}
+      ) : null}
       <button
         type="button"
         onClick={onRemove}
@@ -72,10 +80,19 @@ export function ImageUpload({
   value,
   onChange,
   folder,
+  max = Infinity,
+  coverBadge = true,
+  contain = false,
 }: {
   value: string[];
   onChange: (urls: string[]) => void;
   folder: string;
+  /** Tek görsel (logo vb.) için 1 */
+  max?: number;
+  /** Galeri kapak rozeti — logo yüklemede kapalı */
+  coverBadge?: boolean;
+  /** object-contain — logo önizlemesi için */
+  contain?: boolean;
 }) {
   const [uploading, setUploading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -83,13 +100,21 @@ export function ImageUpload({
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
+  const allowReorder = max > 1;
+  const showCoverBadge = coverBadge && max > 1;
+  const canAdd = value.length < max;
 
   const upload = async (files: FileList | null) => {
     if (!files?.length) return;
     setUploading(true);
     const supabase = getBrowserSupabase();
-    const urls = [...value];
+    let urls = [...value];
     for (const file of Array.from(files)) {
+      if (urls.length >= max) {
+        // tek slot: yeni görsel eskisinin yerini alır
+        if (max === 1) urls = [];
+        else break;
+      }
       const ext = file.name.split(".").pop() ?? "jpg";
       const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
       const { error } = await supabase.storage
@@ -105,7 +130,7 @@ export function ImageUpload({
       urls.push(publicUrl);
     }
     setUploading(false);
-    onChange(urls);
+    onChange(urls.slice(0, max === Infinity ? undefined : max));
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -147,10 +172,14 @@ export function ImageUpload({
               className="relative aspect-square overflow-hidden rounded-md border border-[var(--line)] bg-[var(--paper-deep)]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img
+                src={url}
+                alt=""
+                className={`h-full w-full ${contain ? "object-contain p-2" : "object-cover"}`}
+              />
             </div>
           ))}
-          {uploadTile}
+          {canAdd ? uploadTile : null}
         </div>
       </div>
     );
@@ -170,16 +199,21 @@ export function ImageUpload({
                 key={url}
                 url={url}
                 index={i}
+                showCoverBadge={showCoverBadge}
+                allowReorder={allowReorder}
+                contain={contain}
                 onRemove={() => onChange(value.filter((u) => u !== url))}
               />
             ))}
-            {uploadTile}
+            {canAdd ? uploadTile : null}
           </div>
         </SortableContext>
       </DndContext>
-      <p className="text-xs text-[var(--ink-muted)]">
-        Sürükleyerek sıralayın — ilk görsel kapak olur.
-      </p>
+      {allowReorder ? (
+        <p className="text-xs text-[var(--ink-muted)]">
+          Sürükleyerek sıralayın — ilk görsel kapak olur.
+        </p>
+      ) : null}
     </div>
   );
 }

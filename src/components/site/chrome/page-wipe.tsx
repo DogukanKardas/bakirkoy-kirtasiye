@@ -47,7 +47,7 @@ export function PageWipe() {
       // navigasyon hiç tamamlanmazsa yaprağı geri çek
       safety.current = window.setTimeout(() => {
         setLeaving(true);
-      }, 2000);
+      }, 1100);
     };
 
     document.addEventListener("click", onClick, true);

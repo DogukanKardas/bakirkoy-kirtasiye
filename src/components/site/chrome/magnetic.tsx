@@ -36,11 +36,14 @@ export function Magnetic({
     return false;
   };
 
+  // className'de hidden varsa inline-block ekleme — aksi halde mobil gizleme ezilir
+  const displayClass = /\bhidden\b/.test(className) ? "" : "inline-block";
+
   return (
     <motion.span
       ref={ref}
       style={{ x, y }}
-      className={`inline-block ${className}`}
+      className={`${displayClass} ${className}`.trim()}
       onPointerMove={(e) => {
         if (check()) return;
         const rect = ref.current?.getBoundingClientRect();

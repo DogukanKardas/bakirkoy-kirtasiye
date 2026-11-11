@@ -15,6 +15,7 @@ export function BrandLogo({
   className = "",
   priority = false,
 }: BrandLogoProps) {
+  // Logo ~3:1 (1024×341); dar header'da ezilmesin diye shrink-0
   const width = Math.round(height * 3);
 
   return (
@@ -24,8 +25,8 @@ export function BrandLogo({
       width={width}
       height={height}
       priority={priority}
-      className={`h-auto w-auto object-contain ${className}`}
-      style={{ height, width: "auto" }}
+      className={`block h-auto w-auto shrink-0 object-contain object-left ${className}`}
+      style={{ height, width: "auto", maxHeight: height }}
     />
   );
 }

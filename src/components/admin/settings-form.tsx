@@ -183,6 +183,9 @@ export function SettingsForm({ settings }: { settings: Settings }) {
                 value={s.logoUrl ? [s.logoUrl] : []}
                 onChange={(u) => set("logoUrl", u[0] ?? "")}
                 folder="brand"
+                max={1}
+                coverBadge={false}
+                contain
               />
             </div>
             <div>
@@ -193,6 +196,9 @@ export function SettingsForm({ settings }: { settings: Settings }) {
                 value={s.logoDarkUrl ? [s.logoDarkUrl] : []}
                 onChange={(u) => set("logoDarkUrl", u[0] ?? "")}
                 folder="brand"
+                max={1}
+                coverBadge={false}
+                contain
               />
             </div>
             <AToggle
@@ -208,6 +214,8 @@ export function SettingsForm({ settings }: { settings: Settings }) {
                 value={s.ogImageUrl ? [s.ogImageUrl] : []}
                 onChange={(u) => set("ogImageUrl", u[0] ?? "")}
                 folder="brand"
+                max={1}
+                coverBadge={false}
               />
             </div>
             <p className="text-xs text-[var(--ink-muted)]">

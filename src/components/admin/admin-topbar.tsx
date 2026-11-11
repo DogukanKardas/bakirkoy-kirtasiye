@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
+import { openAdminNav } from "./admin-sidebar";
 import { useAdminTheme } from "./admin-providers";
 
 const LABELS: Record<string, string> = {
@@ -56,7 +57,18 @@ export function AdminTopbar({
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-[var(--line)] bg-[var(--paper)] px-4">
-      <nav aria-label="breadcrumb" className="flex items-center gap-1 text-sm">
+      <button
+        type="button"
+        onClick={openAdminNav}
+        className="grid h-9 w-9 place-items-center rounded-md border border-[var(--line)] text-sm md:hidden"
+        aria-label="Menüyü aç"
+      >
+        ☰
+      </button>
+      <nav
+        aria-label="breadcrumb"
+        className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-sm"
+      >
         {crumbs.map((c, i) => (
           <span key={c.href} className="flex items-center gap-1">
             {i > 0 && <span className="text-[var(--ink-muted)]">/</span>}
