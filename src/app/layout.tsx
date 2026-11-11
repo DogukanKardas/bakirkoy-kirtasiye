@@ -46,8 +46,21 @@ export async function generateMetadata(): Promise<Metadata> {
     description: s.slogan,
     alternates: { canonical: "/" },
     icons: {
-      icon: s.faviconUrl || s.logoUrl,
-      apple: s.faviconUrl || s.logoUrl,
+      // Ayı mascot favicon; DB'de logoyla aynıysa yerel ayı ikonunu kullan
+      icon: [
+        {
+          url:
+            s.faviconUrl && s.faviconUrl !== s.logoUrl
+              ? s.faviconUrl
+              : "/brand/favicon.png",
+          type: "image/png",
+        },
+        { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple:
+        s.faviconUrl && s.faviconUrl !== s.logoUrl
+          ? s.faviconUrl
+          : "/brand/favicon.png",
     },
     openGraph: {
       title: s.shopName,
