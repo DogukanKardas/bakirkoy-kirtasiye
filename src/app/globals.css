@@ -1,26 +1,274 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f3efe6;
+  --paper-deep: #eae4d6;
+  --ink: #151515;
+  --ink-soft: #4a463c;
+  /* kontrast ? 4.5:1 (--paper üzerinde, WCAG AA küçük metin) */
+  --ink-muted: #6f6a58;
+  --accent: #f2e14c;
+  --accent-2: #2438e8;
+  --line: #d8d2c0;
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 }
 
 body {
-  background: var(--background);
+  background: var(--paper);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* kâ??t dokusu: statik nokta deseni (feTurbulence mobilde LCP'yi öldürüyordu) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--ink) 55%, transparent) 0.6px,
+    transparent 0.7px
+  );
+  background-size: 3px 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* klavye gezinmesi: belirgin odak halkas? (fare t?klamas?nda görünmez) */
+:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+.admin-dark :focus-visible {
+  outline-color: var(--accent);
+}
+
+/* ekran okuyucu / klavye: içeri?e atla */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: transform 0.15s ease-out;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* özel imleç etkinken native imleci gizle (metin alanlar? hariç) */
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+html.custom-cursor input,
+html.custom-cursor textarea,
+html.custom-cursor select,
+html.custom-cursor [contenteditable="true"] {
+  cursor: auto !important;
+}
+
+/* editoryal display ölçeði */
+.display-1 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(4rem, 12vw, 13.75rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+
+.display-2 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.75rem, 7vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+}
+
+.display-3 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* defter çizgisi motifi */
+.ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    color-mix(in srgb, var(--ink) 7%, transparent) 31px,
+    color-mix(in srgb, var(--ink) 7%, transparent) 32px
+  );
+}
+
+/* fiyat etiketi */
+.price-tag {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--ink);
+  padding: 0.15rem 0.5rem;
+  display: inline-block;
+  background: var(--paper);
+}
+
+/* fosforlu kalem vurgusu */
+.highlight {
+  background-image: linear-gradient(
+    to top,
+    var(--accent) 0%,
+    var(--accent) 38%,
+    transparent 38%
+  );
+  padding: 0 0.08em;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 404: buru?turulmu? kâ??t topunun hafif sallant?s? */
+@keyframes crumple-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-rise-delay {
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-\[crumple-bob_3\.2s_ease-in-out_infinite\] {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* admin koyu tema */
+.admin-dark {
+  --paper: #1c1a14;
+  --paper-deep: #131109;
+  --ink: #ede9db;
+  --ink-soft: #b3ac99;
+  /* koyu zeminde kontrast ? 4.5:1 */
+  --ink-muted: #a39b85;
+  --line: #38331f;
+}
+
+.admin-dark .price-tag {
+  background: var(--paper);
+}
+
+/* yazdýrma: liste talepleri */
+@media print {
+  body::after {
+    display: none;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print-sheet,
+  .print-sheet * {
+    visibility: visible;
+  }
+  .print-sheet {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    color: #111;
+    padding: 32px;
+    overflow: visible;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ---- FAZ 4: view transitions ---- */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-group(root) { animation-duration: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* Suspense reveal: skeleton a?a??, i?erik yukar? */
+::view-transition-old(.slide-down) {
+  animation:
+    150ms ease-out both vt-fade reverse,
+    150ms ease-out both vt-slide-y reverse;
+}
+::view-transition-new(.slide-up) {
+  animation:
+    200ms ease-in 140ms both vt-fade,
+    380ms cubic-bezier(0.22, 1, 0.36, 1) both vt-slide-y;
+}
+@keyframes vt-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes vt-slide-y {
+  from { transform: translateY(12px); }
+  to { transform: translateY(0); }
 }
