@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { adminPasswordLoginAction } from "@/lib/actions/admin-login";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
 import { AButton, ACard, AInput } from "@/components/admin/ui";
 
@@ -21,14 +22,13 @@ export default function AdminLoginPage() {
   const login = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const supabase = getBrowserSupabase();
-    const { error } = await supabase.auth.signInWithPassword({
+    const res = await adminPasswordLoginAction({
       email: email.trim(),
       password,
     });
     setBusy(false);
-    if (error) {
-      toast.error("Giriş başarısız: " + error.message);
+    if (!res.ok) {
+      toast.error("Giriş başarısız: " + res.error);
       return;
     }
     router.push("/admin");

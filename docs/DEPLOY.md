@@ -14,6 +14,9 @@ Vercel projesi → **Settings → Environment Variables**. Production (ve Previe
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Varsa publishable key; yoksa anon ile aynı olabilir |
 | `ADMIN_API_SECRET` | Admin RPC’ler için uzun rastgele secret |
 | `ADMIN_JWT_SECRET` | Oturum imzası için uzun rastgele secret |
+| `ADMIN_EMAIL` | Gömülü admin e-posta (örn. `kardasdogukan@outlook.com`) |
+| `ADMIN_PASSWORD` | Gömülü admin şifresi — panelden şifre olmadan giriş |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase **service_role** key (secret; public etme) |
 | `PAYMENT_PROVIDER` | `test` (varsayılan) — canlı anahtar bağlamadan bırakın |
 
 Ödeme sağlayıcı anahtarları (`IYZICO_*`, `PAYTR_*`) yalnızca e-ticaret gerçekten açılacaksa eklenir. Yerel şablon: `.env.example`.
