@@ -1,14 +1,15 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
 
 let cached: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
   if (!cached) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const url = getSupabaseUrl();
+    const anonKey = getSupabaseAnonKey();
     if (!url || !anonKey) {
       throw new Error(
-        "NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY Vercel Environment Variables'a eklenmeli.",
+        "Supabase env eksik: NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY Vercel Environment Variables'a eklenmeli.",
       );
     }
     cached = createClient(url, anonKey, {

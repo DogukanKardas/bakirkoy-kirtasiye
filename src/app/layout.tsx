@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
 import { getSettings } from "@db/queries";
-import { SITE_URL } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const display = Fraunces({
@@ -37,7 +37,7 @@ const mono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
   return {
-    metadataBase: new URL(SITE_URL),
+    metadataBase: new URL(siteUrl()),
     title: {
       default: s.shopName,
       template: `%s · ${s.shopName}`,
@@ -76,10 +76,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Store",
-    "@id": `${SITE_URL}/#store`,
+    "@id": `${siteUrl()}/#store`,
     name: s.shopName,
     description: s.slogan,
-    url: SITE_URL,
+    url: siteUrl(),
     image: s.ogImageUrl || s.logoUrl || undefined,
     telephone: s.phone || undefined,
     email: s.email || undefined,

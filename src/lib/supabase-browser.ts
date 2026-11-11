@@ -3,8 +3,14 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 export function getBrowserSupabase() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      "Tarayıcı Supabase anahtarları eksik (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY).",
+    );
+  }
+  return createBrowserClient(url, key);
 }
